@@ -12,7 +12,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface StateMapper {
     State toState(StateEntity stateEntity);
-    StateEntity toStateEntity(Entity entity);
+    StateEntity toStateEntity(State estate);
     List<State> toStates(List<StateEntity> estateEntities);
     List<StateEntity> toStateEntities(List<State> states);
 }

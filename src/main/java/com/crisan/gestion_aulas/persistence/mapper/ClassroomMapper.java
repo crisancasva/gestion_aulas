@@ -8,7 +8,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {StateMapper.class})
 public interface ClassroomMapper {
-    Classroom toClasroom(ClassroomEntity classroomEntity);
+    Classroom toClassroom(ClassroomEntity classroomEntity);
     ClassroomEntity toClassroomEntity(Classroom classroom);
     List<Classroom> toClassrooms(List<ClassroomEntity> classroomEntities);
     List<ClassroomEntity> toClassroomEntities(List<Classroom> classrooms);

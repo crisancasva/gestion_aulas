@@ -23,16 +23,23 @@ public class ClassroomRepositoryImpl implements ClassroomRepository {
 
     @Override
     public Optional<Classroom> getById(Long classroomId) {
-        return classroomCrudRepository.findById(classroomId).map(classroomMapper::toClasroom);
+        return classroomCrudRepository.findById(classroomId).map(classroomMapper::toClassroom);
     }
 
     @Override
     public Classroom save(Classroom classroom) {
-        return classroomMapper.toClasroom(classroomCrudRepository.save(classroomMapper.toClassroomEntity(classroom)));
+        return classroomMapper.toClassroom(classroomCrudRepository.save(classroomMapper.toClassroomEntity(classroom)));
     }
 
     @Override
     public void delete(Long classroomId) {
         classroomCrudRepository.deleteById(classroomId);
+    }
+
+    @Override
+    public Optional<Classroom> getByNameAndLocation(String name, String location) {
+        return classroomCrudRepository
+                .findByNameAndLocation(name, location)
+                .map(classroomMapper::toClassroom);
     }
 }

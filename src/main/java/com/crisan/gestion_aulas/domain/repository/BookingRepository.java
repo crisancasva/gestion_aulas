@@ -11,5 +11,6 @@ public interface BookingRepository {
     Optional<Booking> getById(Long bookingId);
     List<Booking> getByDate(LocalDate bookingDate);
     Booking save(Booking booking);
+    List<Booking> getByClassroomAndDate(Long classroomId, LocalDate bookingDate);
     void delete(Long bookingId);
 }

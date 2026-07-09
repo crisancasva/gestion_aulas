@@ -41,6 +41,17 @@ public class BookingRepositoryImpl implements BookingRepository {
     }
 
     @Override
+    public List<Booking> getByClassroomAndDate(Long classroomId, LocalDate bookingDate) {
+
+        return bookingMapper.toBookings(
+                bookingCrudRepository.findByClassroomClassroomIdAndBookingDate(
+                        classroomId,
+                        bookingDate
+                )
+        );
+    }
+
+    @Override
     public void delete(Long bookingId) {
         bookingCrudRepository.deleteById(bookingId);
     }

@@ -2,6 +2,7 @@ package com.crisan.gestion_aulas.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -31,14 +32,18 @@ public class UserEntity {
     @Column(name = "users_password", nullable = false)
     private String password;
 
+    @CreationTimestamp
     @Column(name = "users_date_create", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     private RoleEntity role;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "state_id", nullable = false)
     private StateEntity state;
+
+
+
 }

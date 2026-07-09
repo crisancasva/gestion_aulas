@@ -2,6 +2,7 @@ package com.crisan.gestion_aulas.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,6 +30,7 @@ public class BookingEntity {
     @Column(name = "booking_hour_finish", nullable = false)
     private LocalTime endTime;
 
+    @CreationTimestamp
     @Column(name = "booking_date_create", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
