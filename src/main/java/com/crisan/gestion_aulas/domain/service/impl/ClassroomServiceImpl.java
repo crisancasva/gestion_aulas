@@ -25,10 +25,25 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public Classroom createClassroom(Classroom classroom) {
+    public Classroom create(Classroom classroom) {
         validateCapacity(classroom);
         validateClassroomExists(classroom);
         return classroomRepository.save(classroom);
+    }
+
+    @Override
+    public Classroom update(Long id, Classroom classroom) {
+        Classroom existingClasroom = classroomRepository.getById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Aula no encontrada"));
+
+        validateNameForUpdate(id, classroom.getName(), classroom.getLocation());
+
+        existingClasroom.setName(classroom.getName());
+        existingClasroom.setCapacity(classroom.getCapacity());
+        existingClasroom.setLocation(classroom.getLocation());
+        existingClasroom.setState(classroom.getState());
+
+        return classroomRepository.save(existingClasroom);
     }
 
     @Override
@@ -48,6 +63,7 @@ public class ClassroomServiceImpl implements ClassroomService {
                     );
                 });
     }
+
     private void validateCapacity(Classroom classroom) {
 
         if (classroom.getCapacity() == null || classroom.getCapacity() <= 0) {
@@ -55,6 +71,17 @@ public class ClassroomServiceImpl implements ClassroomService {
                     "La capacidad del aula debe ser mayor que cero."
             );
         }
+    }
+
+    private void validateNameForUpdate(Long id, String name, String location) {
+        classroomRepository.getByNameAndLocation(name, location)
+                .ifPresent(c -> {
+                    if(!c.getClassroomId().equals(id)) {
+                        throw new IllegalArgumentException(
+                                "Ya existe un aula con ese nombre en esa locacion"
+                        );
+                    }
+                });
     }
 
 }

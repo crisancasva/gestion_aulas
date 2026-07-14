@@ -9,6 +9,7 @@ public interface UserService {
     List<User> getAll();
     Optional<User> getById(Long userId);
     Optional<User> getByEmail(String email);
-    User createUser(User user);
+    User create(User user);
+    User update(Long id, User user);
     void delete(Long userId);
 }

@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface ClassroomService {
     List<Classroom> getAll();
     Optional<Classroom> getById(Long classroomId);
-    Classroom createClassroom(Classroom classroom);
+    Classroom create(Classroom classroom);
+    Classroom update(Long id, Classroom classroom);
     void delete(Long classroomId);
 }

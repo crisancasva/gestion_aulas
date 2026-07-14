@@ -22,7 +22,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.getByEmail(email)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("Usuario no encontrado"));
-
+        String authority = "ROLE_" + user.getRole().getRoleDescription().toUpperCase();
+        System.out.println("Rol BD: " + user.getRole().getRoleDescription());
+        System.out.println("Authority: " + authority);
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),

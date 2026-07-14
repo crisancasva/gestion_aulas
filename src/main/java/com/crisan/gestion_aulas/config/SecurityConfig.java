@@ -1,10 +1,13 @@
 package com.crisan.gestion_aulas.config;
 
 import com.crisan.gestion_aulas.security.CustomUserDetailsService;
+import com.crisan.gestion_aulas.security.JwtAccesDeniedHandler;
+import com.crisan.gestion_aulas.security.JwtAuthenticationEntryPoint;
 import com.crisan.gestion_aulas.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -23,6 +26,8 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtAuthenticationFilter jwAtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccesDeniedHandler jwtAccesDeniedHandler;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -30,11 +35,21 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/users")
+                        .hasRole("ADMIN")
+                        .anyRequest()
+                        .authenticated()
+
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(jwtAccesDeniedHandler)
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(

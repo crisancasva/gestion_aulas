@@ -33,12 +33,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(User user) {
-        validateUser(user);
-        validateEmail(user);
+    public User create(User user) {
+
+        validateEmail(user.getEmail());
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         return userRepository.save(user);
+    }
+
+    @Override
+    public User update(Long id, User user) {
+        User existingUser = userRepository.getById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        validateEmailForUpdate(id, user.getEmail());
+
+        existingUser.setName(user.getName());
+        existingUser.setLastName(user.getLastName());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setRole(user.getRole());
+        existingUser.setState(user.getState());
+
+        return userRepository.save(existingUser);
     }
 
     @Override
@@ -47,36 +64,22 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    private void validateUser(User user) {
+    private void validateEmail(String email) {
 
-        if (user.getName() == null || user.getName().isBlank()) {
-            throw new IllegalArgumentException("El nombre es obligatorio.");
-        }
-
-        if (user.getLastName() == null || user.getLastName().isBlank()) {
-            throw new IllegalArgumentException("El apellido es obligatorio.");
-        }
-
-        if (user.getPassword() == null || user.getPassword().isBlank()) {
-            throw new IllegalArgumentException("La contraseña es obligatoria.");
-        }
-
-        if (user.getEmail() == null || user.getEmail().isBlank()) {
-            throw new IllegalArgumentException("El correo es obligatorio.");
-        }
-
-        if (!user.getEmail().contains("@")) {
-            throw new IllegalArgumentException("El correo no tiene un formato válido.");
-        }
-    }
-
-    private void validateEmail(User user) {
-
-        userRepository.getByEmail(user.getEmail())
+        userRepository.getByEmail(email)
                 .ifPresent(u -> {
                     throw new IllegalArgumentException(
                             "Ya existe un usuario con ese correo."
                     );
+                });
+    }
+
+    private void validateEmailForUpdate(Long id, String email){
+        userRepository.getByEmail(email)
+                .ifPresent(user -> {
+                    if(!user.getUserId().equals(id)){
+                        throw new IllegalArgumentException("Ya existe un usuario con ese correo");
+                    }
                 });
     }
 
