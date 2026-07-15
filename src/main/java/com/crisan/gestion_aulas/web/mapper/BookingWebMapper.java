@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class BookingWebMapper {
     public Booking toDomain(CreateBookingRequest request) {
         return Booking.builder()
-                .bookingDate(request.getDate())
+                .bookingDate(request.getBookingDate())
                 .startTime(request.getStartTime())
                 .endTime(request.getEndTime())
                 .classroom(Classroom.builder()
@@ -30,7 +30,7 @@ public class BookingWebMapper {
 
     public Booking toDomain(UpdateBookingRequest request){
         return Booking.builder()
-                .bookingDate(request.getDate())
+                .bookingDate(request.getBookingDate())
                 .startTime(request.getStartTime())
                 .endTime(request.getEndTime())
                 .classroom(Classroom.builder()
@@ -46,7 +46,7 @@ public class BookingWebMapper {
 
         return BookingResponse.builder()
                 .id(booking.getBookingId())
-                .date(booking.getBookingDate())
+                .bookingDate(booking.getBookingDate())
                 .startTime(booking.getStartTime())
                 .endTime(booking.getEndTime())
                 .classroom(booking.getClassroom().getName())

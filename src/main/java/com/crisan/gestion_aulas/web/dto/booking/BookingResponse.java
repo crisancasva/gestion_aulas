@@ -10,7 +10,7 @@ import java.time.LocalTime;
 public class BookingResponse {
     private Long id;
 
-    private LocalDate date;
+    private LocalDate bookingDate;
 
     private LocalTime startTime;
 

@@ -12,7 +12,7 @@ import java.time.LocalTime;
 public class UpdateBookingRequest {
     @NotNull(message = "La fecha es obligatoria")
     @FutureOrPresent(message = "La fecha no puede ser anterior al día actual")
-    private LocalDate date;
+    private LocalDate bookingDate;
 
     @NotNull(message = "La hora de inicio es obligatoria")
     private LocalTime startTime;
