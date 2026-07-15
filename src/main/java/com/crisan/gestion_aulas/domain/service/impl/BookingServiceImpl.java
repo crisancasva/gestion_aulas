@@ -39,6 +39,25 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    public Booking updateBooking(Long id, Booking booking) {
+        Booking existingBooking = bookingRepository.getById(id)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Reserva no encontrada"));
+
+        validateBookingDate(booking);
+        validateBookingTime(booking);
+        validateAvailabilityForUpdate(id, booking);
+
+        existingBooking.setBookingDate(booking.getBookingDate());
+        existingBooking.setStartTime(booking.getStartTime());
+        existingBooking.setEndTime(booking.getEndTime());
+        existingBooking.setClassroom(booking.getClassroom());
+        existingBooking.setState(booking.getState());
+
+        return bookingRepository.save(existingBooking);
+    }
+
+    @Override
     public void delete(Long bookingId) {
         bookingRepository.delete(bookingId);
     }
@@ -85,6 +104,30 @@ public class BookingServiceImpl implements BookingService {
             boolean overlap =
                     booking.getStartTime().isBefore(existingBooking.getEndTime())
                             && booking.getEndTime().isAfter(existingBooking.getStartTime());
+
+            if (overlap) {
+                throw new IllegalArgumentException(
+                        "El aula ya está reservada en ese horario."
+                );
+            }
+        }
+    }
+
+    private void validateAvailabilityForUpdate(Long bookingId, Booking booking){
+        List<Booking> bookings = bookingRepository.getByClassroomAndDate(
+                booking.getClassroom().getClassroomId(),
+                booking.getBookingDate()
+        );
+
+        for (Booking existing : bookings) {
+
+            if (existing.getBookingId().equals(bookingId)) {
+                continue;
+            }
+
+            boolean overlap =
+                    booking.getStartTime().isBefore(existing.getEndTime())
+                            && booking.getEndTime().isAfter(existing.getStartTime());
 
             if (overlap) {
                 throw new IllegalArgumentException(

@@ -2,6 +2,11 @@ package com.crisan.gestion_aulas.web.controller;
 
 import com.crisan.gestion_aulas.domain.model.Booking;
 import com.crisan.gestion_aulas.domain.service.BookingService;
+import com.crisan.gestion_aulas.web.dto.booking.BookingResponse;
+import com.crisan.gestion_aulas.web.dto.booking.CreateBookingRequest;
+import com.crisan.gestion_aulas.web.dto.booking.UpdateBookingRequest;
+import com.crisan.gestion_aulas.web.mapper.BookingWebMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,29 +20,54 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingController {
     private final BookingService bookingService;
+    private final BookingWebMapper bookingWebMapper;
 
     @GetMapping
-    public ResponseEntity<List<Booking>> getAll(){
-        return ResponseEntity.ok(bookingService.getAll());
+    public ResponseEntity<List<BookingResponse>> getAll(){
+        List<BookingResponse> bookings = bookingService.getAll()
+                .stream()
+                .map(bookingWebMapper::toResponse)
+                .toList();
+        return ResponseEntity.ok(bookings);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Booking> getById(@PathVariable Long id){
+    public ResponseEntity<BookingResponse> getById(@PathVariable Long id){
         Booking booking = bookingService.getById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada"));
-        return ResponseEntity.ok(booking);
+        return ResponseEntity.ok(bookingWebMapper.toResponse(booking));
     }
 
     @GetMapping("/date/{date}")
-    public ResponseEntity<List<Booking>> getByDate(@PathVariable LocalDate date){
-        return ResponseEntity.ok(bookingService.getByDate(date));
+    public ResponseEntity<List<BookingResponse>> getByDate(@PathVariable LocalDate date){
+        List<BookingResponse> bookings = bookingService.getByDate(date)
+                .stream()
+                .map(bookingWebMapper::toResponse)
+                .toList();
+
+        return ResponseEntity.ok(bookings);
     }
 
     @PostMapping
-    public ResponseEntity<Booking> create(@RequestBody Booking booking){
-        Booking bookingCreated = bookingService.createBooking(booking);
+    public ResponseEntity<BookingResponse> create(@Valid @RequestBody CreateBookingRequest request){
+        Booking booking = bookingWebMapper.toDomain(request);
+        Booking saved = bookingService.createBooking(booking);
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(bookingCreated);
+                .body(bookingWebMapper.toResponse(saved));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<BookingResponse> update(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateBookingRequest request) {
+
+        Booking booking = bookingWebMapper.toDomain(request);
+        Booking updated = bookingService.updateBooking(id, booking);
+
+        return ResponseEntity.ok(
+                bookingWebMapper.toResponse(updated)
+        );
     }
 
     @DeleteMapping("/{id}")
