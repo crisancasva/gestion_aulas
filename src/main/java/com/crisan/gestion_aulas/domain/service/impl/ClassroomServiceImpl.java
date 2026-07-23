@@ -1,5 +1,6 @@
 package com.crisan.gestion_aulas.domain.service.impl;
 
+import com.crisan.gestion_aulas.common.util.Entities;
 import com.crisan.gestion_aulas.domain.model.Classroom;
 import com.crisan.gestion_aulas.domain.repository.ClassroomRepository;
 import com.crisan.gestion_aulas.domain.service.ClassroomService;
@@ -33,8 +34,8 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     @Override
     public Classroom update(Long id, Classroom classroom) {
-        Classroom existingClasroom = classroomRepository.getById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Aula no encontrada"));
+        Classroom existingClasroom = Entities.getOrThrow(
+                classroomRepository.getById(id), "Aula no encontrada");
 
         validateNameForUpdate(id, classroom.getName(), classroom.getLocation());
 

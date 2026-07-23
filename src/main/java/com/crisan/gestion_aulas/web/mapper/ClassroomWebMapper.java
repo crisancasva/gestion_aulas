@@ -1,7 +1,7 @@
 package com.crisan.gestion_aulas.web.mapper;
 
+import com.crisan.gestion_aulas.common.util.DomainReferences;
 import com.crisan.gestion_aulas.domain.model.Classroom;
-import com.crisan.gestion_aulas.domain.model.State;
 import com.crisan.gestion_aulas.web.dto.classroom.ClassroomResponse;
 import com.crisan.gestion_aulas.web.dto.classroom.CreateClassroomRequest;
 import com.crisan.gestion_aulas.web.dto.classroom.UpdateClassroomRequest;
@@ -14,9 +14,7 @@ public class ClassroomWebMapper {
                 .name(request.getName())
                 .capacity(request.getCapacity())
                 .location(request.getLocation())
-                .state(State.builder()
-                        .stateId(request.getStateId())
-                        .build())
+                .state(DomainReferences.state(request.getStateId()))
                 .build();
     }
 
@@ -25,9 +23,7 @@ public class ClassroomWebMapper {
                 .name(request.getName())
                 .capacity(request.getCapacity())
                 .location(request.getLocation())
-                .state(State.builder()
-                        .stateId(request.getStateId())
-                        .build())
+                .state(DomainReferences.state(request.getStateId()))
                 .build();
     }
 

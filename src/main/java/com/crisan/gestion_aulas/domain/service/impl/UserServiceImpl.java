@@ -1,5 +1,6 @@
 package com.crisan.gestion_aulas.domain.service.impl;
 
+import com.crisan.gestion_aulas.common.util.Entities;
 import com.crisan.gestion_aulas.domain.model.User;
 import com.crisan.gestion_aulas.domain.repository.UserRepository;
 import com.crisan.gestion_aulas.domain.service.UserService;
@@ -44,8 +45,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User update(Long id, User user) {
-        User existingUser = userRepository.getById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        User existingUser = Entities.getOrThrow(
+                userRepository.getById(id), "Usuario no encontrado");
 
         validateEmailForUpdate(id, user.getEmail());
 

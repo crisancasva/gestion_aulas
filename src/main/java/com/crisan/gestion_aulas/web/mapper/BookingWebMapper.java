@@ -1,9 +1,7 @@
 package com.crisan.gestion_aulas.web.mapper;
 
+import com.crisan.gestion_aulas.common.util.DomainReferences;
 import com.crisan.gestion_aulas.domain.model.Booking;
-import com.crisan.gestion_aulas.domain.model.Classroom;
-import com.crisan.gestion_aulas.domain.model.State;
-import com.crisan.gestion_aulas.domain.model.User;
 import com.crisan.gestion_aulas.web.dto.booking.BookingResponse;
 import com.crisan.gestion_aulas.web.dto.booking.CreateBookingRequest;
 import com.crisan.gestion_aulas.web.dto.booking.UpdateBookingRequest;
@@ -16,15 +14,9 @@ public class BookingWebMapper {
                 .bookingDate(request.getBookingDate())
                 .startTime(request.getStartTime())
                 .endTime(request.getEndTime())
-                .classroom(Classroom.builder()
-                        .classroomId(request.getClassroomId())
-                        .build())
-                .user(User.builder()
-                        .userId(request.getUserId())
-                        .build())
-                .state(State.builder()
-                        .stateId(request.getStateId())
-                        .build())
+                .classroom(DomainReferences.classroom(request.getClassroomId()))
+                .user(DomainReferences.user(request.getUserId()))
+                .state(DomainReferences.state(request.getStateId()))
                 .build();
     }
 
@@ -33,12 +25,8 @@ public class BookingWebMapper {
                 .bookingDate(request.getBookingDate())
                 .startTime(request.getStartTime())
                 .endTime(request.getEndTime())
-                .classroom(Classroom.builder()
-                        .classroomId(request.getClassroomId())
-                        .build())
-                .state(State.builder()
-                        .stateId(request.getStateId())
-                        .build())
+                .classroom(DomainReferences.classroom(request.getClassroomId()))
+                .state(DomainReferences.state(request.getStateId()))
                 .build();
     }
 

@@ -1,5 +1,7 @@
 package com.crisan.gestion_aulas.web.controller;
 
+import com.crisan.gestion_aulas.common.util.Entities;
+import com.crisan.gestion_aulas.common.util.Mappers;
 import com.crisan.gestion_aulas.domain.model.Booking;
 import com.crisan.gestion_aulas.domain.service.BookingService;
 import com.crisan.gestion_aulas.web.dto.booking.BookingResponse;
@@ -24,26 +26,22 @@ public class BookingController {
 
     @GetMapping
     public ResponseEntity<List<BookingResponse>> getAll(){
-        List<BookingResponse> bookings = bookingService.getAll()
-                .stream()
-                .map(bookingWebMapper::toResponse)
-                .toList();
+        List<BookingResponse> bookings = Mappers.mapList(
+                bookingService.getAll(), bookingWebMapper::toResponse);
         return ResponseEntity.ok(bookings);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<BookingResponse> getById(@PathVariable Long id){
-        Booking booking = bookingService.getById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada"));
+        Booking booking = Entities.getOrThrow(
+                bookingService.getById(id), "Reserva no encontrada");
         return ResponseEntity.ok(bookingWebMapper.toResponse(booking));
     }
 
     @GetMapping("/date/{date}")
     public ResponseEntity<List<BookingResponse>> getByDate(@PathVariable LocalDate date){
-        List<BookingResponse> bookings = bookingService.getByDate(date)
-                .stream()
-                .map(bookingWebMapper::toResponse)
-                .toList();
+        List<BookingResponse> bookings = Mappers.mapList(
+                bookingService.getByDate(date), bookingWebMapper::toResponse);
 
         return ResponseEntity.ok(bookings);
     }
