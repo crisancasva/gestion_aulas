@@ -6,6 +6,7 @@ import com.crisan.gestion_aulas.domain.service.AuthenticationService;
 import com.crisan.gestion_aulas.security.JwtService;
 import com.crisan.gestion_aulas.web.dto.AuthenticationRequest;
 import com.crisan.gestion_aulas.web.dto.AuthenticationResponse;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,20 +21,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public AuthenticationResponse autenthicate(AuthenticationRequest request) {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getEmail(),
-                            request.getPassword()
-                    )
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
 
         User user = userRepository.getByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
 
         String token = jwtService.generateToken(user.getEmail());
 
