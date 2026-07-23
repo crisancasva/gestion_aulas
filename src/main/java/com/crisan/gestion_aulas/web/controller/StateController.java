@@ -1,5 +1,6 @@
 package com.crisan.gestion_aulas.web.controller;
 
+import com.crisan.gestion_aulas.common.util.Entities;
 import com.crisan.gestion_aulas.domain.model.State;
 import com.crisan.gestion_aulas.domain.service.StateService;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,8 @@ public class StateController {
 
     @GetMapping("/{id}")
     public ResponseEntity<State> getById(@PathVariable Long id){
-        State state = stateService.getById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Estado no encontrado"));
+        State state = Entities.getOrThrow(
+                stateService.getById(id), "Estado no encontrado");
         return ResponseEntity.ok(state);
     }
 }

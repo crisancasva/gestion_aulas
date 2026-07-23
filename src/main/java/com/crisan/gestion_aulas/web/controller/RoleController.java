@@ -1,5 +1,6 @@
 package com.crisan.gestion_aulas.web.controller;
 
+import com.crisan.gestion_aulas.common.util.Entities;
 import com.crisan.gestion_aulas.domain.model.Role;
 import com.crisan.gestion_aulas.domain.service.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,8 @@ public class RoleController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Role> getById(@PathVariable Long id){
-        Role role = roleService.getById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado"));
+        Role role = Entities.getOrThrow(
+                roleService.getById(id), "Rol no encontrado");
         return ResponseEntity.ok(role);
     }
 

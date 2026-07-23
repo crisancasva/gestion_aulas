@@ -1,4 +1,6 @@
 package com.crisan.gestion_aulas.web.controller;
+import com.crisan.gestion_aulas.common.util.Entities;
+import com.crisan.gestion_aulas.common.util.Mappers;
 import com.crisan.gestion_aulas.domain.model.User;
 import com.crisan.gestion_aulas.domain.service.UserService;
 import com.crisan.gestion_aulas.web.dto.user.CreateUserRequest;
@@ -22,25 +24,23 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAll(){
-        List<UserResponse> response = userService.getAll()
-                .stream()
-                .map(userWebMapper::toResponse)
-                .toList();
+        List<UserResponse> response = Mappers.mapList(
+                userService.getAll(), userWebMapper::toResponse);
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getById(@PathVariable Long id){
-        User user = userService.getById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        User user = Entities.getOrThrow(
+                userService.getById(id), "Usuario no encontrado");
         return ResponseEntity.ok(userWebMapper.toResponse(user));
     }
 
     @GetMapping("/email/{email}")
     public ResponseEntity<UserResponse> getByEmail(@PathVariable String email) {
-        User user = userService.getByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        User user = Entities.getOrThrow(
+                userService.getByEmail(email), "Usuario no encontrado");
 
         return ResponseEntity.ok(userWebMapper.toResponse(user));
     }

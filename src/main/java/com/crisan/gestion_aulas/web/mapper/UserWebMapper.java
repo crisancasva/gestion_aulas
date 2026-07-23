@@ -1,7 +1,6 @@
 package com.crisan.gestion_aulas.web.mapper;
 
-import com.crisan.gestion_aulas.domain.model.Role;
-import com.crisan.gestion_aulas.domain.model.State;
+import com.crisan.gestion_aulas.common.util.DomainReferences;
 import com.crisan.gestion_aulas.domain.model.User;
 import com.crisan.gestion_aulas.web.dto.user.CreateUserRequest;
 import com.crisan.gestion_aulas.web.dto.user.UpdateUserRequest;
@@ -17,12 +16,8 @@ public class UserWebMapper {
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(request.getPassword())
-                .role(Role.builder()
-                        .roleId(request.getRoleId())
-                        .build())
-                .state(State.builder()
-                        .stateId(request.getStateId())
-                        .build())
+                .role(DomainReferences.role(request.getRoleId()))
+                .state(DomainReferences.state(request.getStateId()))
                 .build();
     }
 
@@ -43,13 +38,9 @@ public class UserWebMapper {
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
 
-        user.setRole(Role.builder()
-                        .roleId(request.getRoleId())
-                        .build());
+        user.setRole(DomainReferences.role(request.getRoleId()));
 
-        user.setState(State.builder()
-                .stateId(request.getStateId())
-                .build());
+        user.setState(DomainReferences.state(request.getStateId()));
     }
 
     public User toDomain(UpdateUserRequest request) {
@@ -58,12 +49,8 @@ public class UserWebMapper {
                 .name(request.getName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
-                .role(Role.builder()
-                        .roleId(request.getRoleId())
-                        .build())
-                .state(State.builder()
-                        .stateId(request.getStateId())
-                        .build())
+                .role(DomainReferences.role(request.getRoleId()))
+                .state(DomainReferences.state(request.getStateId()))
                 .build();
     }
 }
