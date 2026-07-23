@@ -2,7 +2,10 @@ package com.crisan.gestion_aulas.domain.service.impl;
 
 import com.crisan.gestion_aulas.domain.model.Booking;
 import com.crisan.gestion_aulas.domain.model.Classroom;
+import com.crisan.gestion_aulas.domain.model.User;
 import com.crisan.gestion_aulas.domain.repository.BookingRepository;
+import com.crisan.gestion_aulas.domain.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +13,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -28,8 +33,13 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class BookingServiceImplTest {
 
+    private static final String CURRENT_EMAIL = "user@test.com";
+
     @Mock
     private BookingRepository bookingRepository;
+
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private BookingServiceImpl bookingService;
@@ -38,6 +48,9 @@ class BookingServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(CURRENT_EMAIL, null));
+
         validBooking = Booking.builder()
                 .bookingId(1L)
                 .bookingDate(LocalDate.now().plusDays(1))
@@ -45,6 +58,16 @@ class BookingServiceImplTest {
                 .endTime(LocalTime.of(10, 0))
                 .classroom(Classroom.builder().classroomId(5L).build())
                 .build();
+    }
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
+    }
+
+    private void mockCurrentUser() {
+        when(userRepository.getByEmail(CURRENT_EMAIL))
+                .thenReturn(Optional.of(User.builder().userId(7L).email(CURRENT_EMAIL).build()));
     }
 
     @Test
@@ -81,6 +104,7 @@ class BookingServiceImplTest {
 
     @Test
     void createBookingSavesWhenValid() {
+        mockCurrentUser();
         when(bookingRepository.getByClassroomAndDate(5L, validBooking.getBookingDate()))
                 .thenReturn(List.of());
         when(bookingRepository.save(validBooking)).thenReturn(validBooking);
@@ -93,6 +117,7 @@ class BookingServiceImplTest {
 
     @Test
     void createBookingRejectsNullDate() {
+        mockCurrentUser();
         validBooking.setBookingDate(null);
 
         assertThatThrownBy(() -> bookingService.createBooking(validBooking))
@@ -103,6 +128,7 @@ class BookingServiceImplTest {
 
     @Test
     void createBookingRejectsPastDate() {
+        mockCurrentUser();
         validBooking.setBookingDate(LocalDate.now().minusDays(1));
 
         assertThatThrownBy(() -> bookingService.createBooking(validBooking))
@@ -112,6 +138,7 @@ class BookingServiceImplTest {
 
     @Test
     void createBookingRejectsNullTimes() {
+        mockCurrentUser();
         validBooking.setStartTime(null);
 
         assertThatThrownBy(() -> bookingService.createBooking(validBooking))
@@ -121,6 +148,7 @@ class BookingServiceImplTest {
 
     @Test
     void createBookingRejectsStartNotBeforeEnd() {
+        mockCurrentUser();
         validBooking.setStartTime(LocalTime.of(11, 0));
         validBooking.setEndTime(LocalTime.of(10, 0));
 
@@ -131,6 +159,7 @@ class BookingServiceImplTest {
 
     @Test
     void createBookingRejectsOverlappingBooking() {
+        mockCurrentUser();
         Booking existing = Booking.builder()
                 .bookingId(99L)
                 .startTime(LocalTime.of(9, 30))
@@ -147,6 +176,7 @@ class BookingServiceImplTest {
 
     @Test
     void createBookingAllowsAdjacentBooking() {
+        mockCurrentUser();
         Booking existing = Booking.builder()
                 .bookingId(99L)
                 .startTime(LocalTime.of(10, 0))
@@ -157,6 +187,26 @@ class BookingServiceImplTest {
         when(bookingRepository.save(validBooking)).thenReturn(validBooking);
 
         assertThat(bookingService.createBooking(validBooking)).isEqualTo(validBooking);
+    }
+
+    @Test
+    void getMyBookingsReturnsBookingsForAuthenticatedUser() {
+        mockCurrentUser();
+        List<Booking> mine = List.of(validBooking);
+        when(bookingRepository.getByUser(7L)).thenReturn(mine);
+
+        assertThat(bookingService.getMyBookings()).isEqualTo(mine);
+        verify(bookingRepository).getByUser(7L);
+    }
+
+    @Test
+    void getMyBookingsThrowsWhenUserNotFound() {
+        when(userRepository.getByEmail(CURRENT_EMAIL)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> bookingService.getMyBookings())
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Usuario no encontrado");
+        verify(bookingRepository, never()).getByUser(anyLong());
     }
 
     @Test

@@ -19,13 +19,12 @@ class BookingWebMapperTest {
     private final BookingWebMapper mapper = new BookingWebMapper();
 
     @Test
-    void toDomainFromCreateRequestMapsAllFields() {
+    void toDomainFromCreateRequestMapsFieldsWithoutUser() {
         CreateBookingRequest request = new CreateBookingRequest();
         request.setBookingDate(LocalDate.of(2030, 1, 1));
         request.setStartTime(LocalTime.of(9, 0));
         request.setEndTime(LocalTime.of(10, 0));
         request.setClassroomId(5L);
-        request.setUserId(7L);
         request.setStateId(3L);
 
         Booking booking = mapper.toDomain(request);
@@ -34,8 +33,8 @@ class BookingWebMapperTest {
         assertThat(booking.getStartTime()).isEqualTo(LocalTime.of(9, 0));
         assertThat(booking.getEndTime()).isEqualTo(LocalTime.of(10, 0));
         assertThat(booking.getClassroom().getClassroomId()).isEqualTo(5L);
-        assertThat(booking.getUser().getUserId()).isEqualTo(7L);
         assertThat(booking.getState().getStateId()).isEqualTo(3L);
+        assertThat(booking.getUser()).isNull();
     }
 
     @Test
