@@ -23,9 +23,6 @@ public class CreateBookingRequest {
     @NotNull(message = "El aula es obligatoria")
     private Long classroomId;
 
-    @NotNull(message = "El usuario es obligatorio")
-    private Long userId;
-
     @NotNull(message = "El estado es obligatorio")
     private Long stateId;
 }

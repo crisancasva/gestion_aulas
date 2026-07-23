@@ -52,6 +52,12 @@ public class BookingRepositoryImpl implements BookingRepository {
     }
 
     @Override
+    public List<Booking> getByUser(Long userId) {
+        return bookingMapper.toBookings(
+                bookingCrudRepository.findByUserUserId(userId));
+    }
+
+    @Override
     public void delete(Long bookingId) {
         bookingCrudRepository.deleteById(bookingId);
     }

@@ -12,4 +12,5 @@ public interface BookingCrudRepository extends JpaRepository<BookingEntity, Long
             Long classroomId,
             LocalDate bookingDate
     );
+    List<BookingEntity> findByUserUserId(Long userId);
 }

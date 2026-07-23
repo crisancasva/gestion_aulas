@@ -57,6 +57,17 @@ public class BookingController {
                 .body(bookingWebMapper.toResponse(saved));
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<List<BookingResponse>> getMyBookings() {
+
+        List<BookingResponse> bookings = bookingService.getMyBookings()
+                .stream()
+                .map(bookingWebMapper::toResponse)
+                .toList();
+
+        return ResponseEntity.ok(bookings);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<BookingResponse> update(
             @PathVariable Long id,

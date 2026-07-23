@@ -1,9 +1,13 @@
 package com.crisan.gestion_aulas.domain.service.impl;
 
 import com.crisan.gestion_aulas.domain.model.Booking;
+import com.crisan.gestion_aulas.domain.model.User;
 import com.crisan.gestion_aulas.domain.repository.BookingRepository;
+import com.crisan.gestion_aulas.domain.repository.UserRepository;
 import com.crisan.gestion_aulas.domain.service.BookingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,6 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
+    private final UserRepository userRepository;
 
     @Override
     public List<Booking> getAll() {
@@ -32,9 +37,19 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Booking createBooking(Booking booking) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        User user = userRepository.getByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        booking.setUser(user);
+
         validateBookingDate(booking);
         validateBookingTime(booking);
         validateAvailability(booking);
+
         return bookingRepository.save(booking);
     }
 
@@ -55,6 +70,21 @@ public class BookingServiceImpl implements BookingService {
         existingBooking.setState(booking.getState());
 
         return bookingRepository.save(existingBooking);
+    }
+
+    @Override
+    public List<Booking> getMyBookings() {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        User user = userRepository.getByEmail(email)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Usuario no encontrado."));
+
+        return bookingRepository.getByUser(user.getUserId());
     }
 
     @Override
