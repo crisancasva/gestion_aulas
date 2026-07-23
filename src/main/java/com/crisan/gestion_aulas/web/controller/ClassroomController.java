@@ -1,5 +1,7 @@
 package com.crisan.gestion_aulas.web.controller;
 
+import com.crisan.gestion_aulas.common.util.Entities;
+import com.crisan.gestion_aulas.common.util.Mappers;
 import com.crisan.gestion_aulas.domain.model.Classroom;
 import com.crisan.gestion_aulas.domain.service.ClassroomService;
 import com.crisan.gestion_aulas.web.dto.classroom.ClassroomResponse;
@@ -23,10 +25,8 @@ public class ClassroomController {
 
     @GetMapping
     public ResponseEntity<List<ClassroomResponse>> getAll(){
-        List<ClassroomResponse> response = classroomService.getAll()
-                .stream()
-                .map(classroomWebMapper::toResponse)
-                .toList();
+        List<ClassroomResponse> response = Mappers.mapList(
+                classroomService.getAll(), classroomWebMapper::toResponse);
 
         return ResponseEntity.ok(response);
     }
@@ -34,8 +34,8 @@ public class ClassroomController {
     @GetMapping("/{id}")
     public ResponseEntity<ClassroomResponse> getById(@PathVariable Long id){
 
-        Classroom classroom = classroomService.getById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Aula no encontrada"));
+        Classroom classroom = Entities.getOrThrow(
+                classroomService.getById(id), "Aula no encontrada");
         return ResponseEntity.ok(classroomWebMapper.toResponse(classroom));
     }
 

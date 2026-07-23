@@ -1,5 +1,6 @@
 package com.crisan.gestion_aulas.domain.service.impl;
 
+import com.crisan.gestion_aulas.common.util.Entities;
 import com.crisan.gestion_aulas.domain.model.Booking;
 import com.crisan.gestion_aulas.domain.model.User;
 import com.crisan.gestion_aulas.domain.repository.BookingRepository;
@@ -55,9 +56,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Booking updateBooking(Long id, Booking booking) {
-        Booking existingBooking = bookingRepository.getById(id)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Reserva no encontrada"));
+        Booking existingBooking = Entities.getOrThrow(
+                bookingRepository.getById(id), "Reserva no encontrada");
 
         validateBookingDate(booking);
         validateBookingTime(booking);
