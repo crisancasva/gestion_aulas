@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Variables de entorno / secretos ###
+.env
+application-dev.properties
