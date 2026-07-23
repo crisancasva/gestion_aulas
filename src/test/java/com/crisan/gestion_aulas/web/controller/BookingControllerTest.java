@@ -94,6 +94,18 @@ class BookingControllerTest {
     }
 
     @Test
+    void getMyBookingsReturnsMappedResponses() {
+        Booking booking = Booking.builder().bookingId(1L).build();
+        when(bookingService.getMyBookings()).thenReturn(List.of(booking));
+        when(bookingWebMapper.toResponse(booking)).thenReturn(response);
+
+        ResponseEntity<List<BookingResponse>> result = controller.getMyBookings();
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result.getBody()).containsExactly(response);
+    }
+
+    @Test
     void updateReturnsOk() {
         UpdateBookingRequest request = new UpdateBookingRequest();
         Booking domain = Booking.builder().build();
